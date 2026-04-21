@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>斗罗大陆 · 武魂觉醒 V10</title>
+<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+<!-- SVG liquid glass filters -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <!-- Liquid distortion filter -->
+    <filter id="liquid" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.018 0.022" numOctaves="3" seed="8" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="6" xChannelSelector="R" yChannelSelector="G" result="displaced"/>
+      <feGaussianBlur in="displaced" stdDeviation="0.4" result="blurred"/>
+      <feComposite in="blurred" in2="SourceGraphic" operator="in"/>
+    </filter>
+    <!-- Glass highlight filter -->
+    <filter id="glass-shine" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3" result="blur"/>
+      <feOffset dx="-2" dy="-3" result="offset"/>
+      <feFlood flood-color="rgba(255,255,255,0.45)" result="white"/>
+      <feComposite in="white" in2="offset" operator="in" result="shine"/>
+      <feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="shine"/></feMerge>
+    </filter>
+    <!-- Deep glow for icons -->
+    <filter id="icon-glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur1"/>
+      <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur2"/>
+      <feMerge><feMergeNode in="blur1"/><feMergeNode in="blur2"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <!-- Chromatic aberration -->
+    <filter id="chromatic" x="-5%" y="-5%" width="110%" height="110%">
+      <feColorMatrix type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="r"/>
+      <feOffset in="r" dx="1.5" dy="0" result="rOff"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="g"/>
+      <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="b"/>
+      <feOffset in="b" dx="-1.5" dy="0" result="bOff"/>
+      <feMerge><feMergeNode in="rOff"/><feMergeNode in="g"/><feMergeNode in="bOff"/></feMerge>
+    </filter>
+    <!-- Liquid glass texture for cards -->
+    <filter id="card-glass" x="-2%" y="-2%" width="104%" height="104%">
+      <feTurbulence type="turbulence" baseFrequency="0.065 0.08" numOctaves="2" seed="3" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.5" result="disp"/>
+      <feGaussianBlur in="disp" stdDeviation="0.3"/>
+    </filter>
+    <!-- Ring quality gradients -->
+    <linearGradient id="ring-100" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#c4b5fd"/><stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+    <linearGradient id="ring-10k" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6ee7b7"/><stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    <linearGradient id="ring-100k" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fde68a"/><stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+    <linearGradient id="ring-1m" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fca5a5"/><stop offset="100%" stop-color="#dc2626"/>
+    </linearGradient>
+    <linearGradient id="ring-inf" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f0abfc"/><stop offset="100%" stop-color="#9333ea"/>
+    </linearGradient>
+    <linearGradient id="glass-hl" x1="0" y1="0" x2="0.3" y2="1">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.55)"/>
+      <stop offset="40%" stop-color="rgba(255,255,255,0.12)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0.04)"/>
+    </linearGradient>
+    <radialGradient id="bubble-inner" cx="35%" cy="28%" r="65%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.6)"/>
+      <stop offset="35%" stop-color="rgba(180,220,255,0.2)"/>
+      <stop offset="100%" stop-color="rgba(80,140,255,0.05)"/>
+    </radialGradient>
+  </defs>
+</svg>
+
+<style>
+:root{
+  /* V10 liquid glass palette */
+  --bg:#080c18;
+  --glass-white:rgba(255,255,255,0.08);
+  --glass-border:rgba(255,255,255,0.18);
+  --glass-shine:rgba(255,255,255,0.55);
+  --glass-shadow:rgba(0,0,0,0.45);
+  --accent:#4fa3ff;
+  --accent2:#a78bfa;
+  --gold:#f0c060;
+  --txt:rgba(255,255,255,0.92);
+  --txt2:rgba(255,255,255,0.45);
+  --blur:24px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{
+  width:100%;height:100%;overflow:hidden;
+  background:var(--bg);
+  font-family:'Noto Sans SC',sans-serif;
+  color:var(--txt);
+  user-select:none;
+}
+
+/* ── AMBIENT BG ── */
+#bg-layer{
+  position:fixed;inset:0;z-index:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(40,80,200,.28) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(100,40,180,.22) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 50% at 50% 50%, rgba(10,30,80,.4) 0%, transparent 70%),
+    linear-gradient(180deg,#060b1a 0%,#04080f 100%);
+}
+/* Animated liquid blobs */
+.blob{
+  position:absolute;border-radius:50%;filter:blur(60px);animation:blobFloat 12s ease-in-out infinite;
+  pointer-events:none;
+}
+.blob1{width:300px;height:300px;background:radial-gradient(circle,rgba(60,120,255,.18),transparent 70%);top:-80px;left:-60px;animation-delay:0s;}
+.blob2{width:240px;height:240px;background:radial-gradient(circle,rgba(140,60,240,.15),transparent 70%);top:40%;right:-40px;animation-delay:-4s;}
+.blob3{width:200px;height:200px;background:radial-gradient(circle,rgba(30,180,160,.12),transparent 70%);bottom:100px;left:30%;animation-delay:-8s;}
+@keyframes blobFloat{
+  0%,100%{transform:translate(0,0) scale(1);}
+  33%{transform:translate(20px,-30px) scale(1.08);}
+  66%{transform:translate(-15px,20px) scale(0.95);}
+}
+
+/* ── GLASS MIXIN ── */
+.glass{
+  background:linear-gradient(135deg,rgba(255,255,255,.11) 0%,rgba(255,255,255,.04) 50%,rgba(255,255,255,.08) 100%);
+  border:1px solid rgba(255,255,255,.18);
+  backdrop-filter:blur(var(--blur)) saturate(180%);
+  -webkit-backdrop-filter:blur(var(--blur)) saturate(180%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.25),
+    inset 0 -1px 0 rgba(0,0,0,.15),
+    0 8px 32px rgba(0,0,0,.35),
+    0 2px 8px rgba(0,0,0,.25);
+}
+/* Shine sweep on glass */
+.glass::before{
+  content:'';position:absolute;inset:0;border-radius:inherit;
+  background:linear-gradient(115deg,rgba(255,255,255,.22) 0%,transparent 40%,transparent 60%,rgba(255,255,255,.06) 100%);
+  pointer-events:none;
+}
+
+/* ── APP ── */
+#app{
+  position:relative;z-index:1;
+  width:100%;height:100%;
+  max-width:430px;margin:0 auto;
+  display:flex;flex-direction:column;
+  overflow:hidden;
+}
+
+/* ── TOPBAR ── */
+#topbar{
+  flex-shrink:0;height:58px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 18px;position:relative;z-index:50;
+}
+#topbar::after{
+  content:'';position:absolute;bottom:0;left:16px;right:16px;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),rgba(255,255,255,.08),transparent);
+}
+.tb-title{
+  font-family:'Ma Shan Zheng',serif;font-size:20px;letter-spacing:4px;
+  background:linear-gradient(135deg,#fff 0%,rgba(160,200,255,.9) 50%,rgba(200,160,255,.8) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.tb-pills{display:flex;gap:7px;}
+.lg-pill{
+  position:relative;overflow:hidden;
+  display:flex;align-items:center;gap:4px;
+  padding:5px 11px;border-radius:20px;font-size:10px;
+  background:linear-gradient(135deg,rgba(255,255,255,.14),rgba(255,255,255,.05));
+  border:1px solid rgba(255,255,255,.22);
+  backdrop-filter:blur(20px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 2px 8px rgba(0,0,0,.25);
+  color:rgba(255,255,255,.9);
+  transition:all .2s;
+}
+.lg-pill::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:50%;
+  background:linear-gradient(180deg,rgba(255,255,255,.18),transparent);
+  border-radius:20px 20px 0 0;
+}
+.lg-pill.pow{background:linear-gradient(135deg,rgba(239,68,68,.2),rgba(239,68,68,.07));border-color:rgba(239,68,68,.3);color:#fca5a5;}
+
+/* ── CONTENT ── */
+#content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:72px;}
+#content::-webkit-scrollbar{display:none;}
+
+/* ── HERO ── */
+.v10-hero{
+  display:flex;flex-direction:column;align-items:center;
+  padding:28px 16px 16px;position:relative;
+}
+
+/* ── LIQUID SOUL ICON ── */
+.soul-sphere-wrap{
+  position:relative;width:200px;height:200px;
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:20px;
+}
+/* Outer ambient ring */
+.sphere-ambient{
+  position:absolute;width:196px;height:196px;border-radius:50%;
+  background:conic-gradient(from 0deg,transparent 0%,rgba(120,180,255,.3) 20%,transparent 40%,rgba(180,120,255,.2) 60%,transparent 80%,rgba(120,180,255,.15) 100%);
+  animation:ambientSpin 8s linear infinite;
+  filter:blur(2px);
+}
+@keyframes ambientSpin{to{transform:rotate(360deg);}}
+/* Glass sphere */
+.soul-sphere{
+  position:absolute;width:172px;height:172px;border-radius:50%;
+  overflow:hidden;
+  background:radial-gradient(ellipse at 38% 28%,rgba(160,210,255,.55) 0%,rgba(80,140,255,.25) 30%,rgba(40,80,200,.15) 60%,rgba(10,20,80,.35) 100%);
+  border:1px solid rgba(255,255,255,.35);
+  box-shadow:
+    inset 0 2px 0 rgba(255,255,255,.5),
+    inset 0 -2px 4px rgba(0,0,0,.3),
+    inset -4px 0 8px rgba(80,120,255,.15),
+    0 20px 60px rgba(0,0,0,.6),
+    0 0 40px rgba(80,140,255,.15);
+  filter:url(#liquid);
+}
+/* Top specular highlight */
+.sphere-shine{
+  position:absolute;width:76px;height:44px;
+  border-radius:50%;
+  background:radial-gradient(ellipse,rgba(255,255,255,.75) 0%,rgba(255,255,255,.3) 40%,transparent 100%);
+  top:18px;left:34px;
+  filter:blur(4px);
+  transform:rotate(-15deg);
+  pointer-events:none;
+}
+/* Bottom rim light */
+.sphere-rim{
+  position:absolute;bottom:14px;
+  width:100px;height:20px;border-radius:50%;
+  background:radial-gradient(ellipse,rgba(160,200,255,.35) 0%,transparent 70%);
+  filter:blur(5px);
+}
+/* Chromatic aberration edge */
+.sphere-chroma{
+  position:absolute;width:172px;height:172px;border-radius:50%;
+  background:transparent;
+  border:2px solid transparent;
+  box-shadow:
+    -2px 0 0 rgba(255,80,80,.12),
+    2px 0 0 rgba(80,80,255,.12),
+    0 -2px 0 rgba(80,255,80,.08);
+  pointer-events:none;
+}
+/* Soul icon inside sphere */
+.sphere-icon{
+  position:relative;z-index:2;
+  font-size:76px;line-height:1;
+  animation:sphereFloat 4s ease-in-out infinite;
+  filter:drop-shadow(0 8px 20px rgba(0,0,0,.5)) drop-shadow(0 0 30px rgba(120,180,255,.4));
+}
+@keyframes sphereFloat{
+  0%,100%{transform:translateY(0) scale(1);}
+  50%{transform:translateY(-10px) scale(1.03);}
+}
+
+/* Orbit rings around sphere */
+.orbit-ring{
+  position:absolute;border-radius:50%;border:1px solid rgba(255,255,255,.12);
+}
+.or1{width:196px;height:196px;animation:orbitSpin 18s linear infinite;border-color:rgba(120,180,255,.2);}
+.or2{width:220px;height:220px;animation:orbitSpin 28s linear infinite reverse;border-color:rgba(180,120,255,.12);border-style:dashed;}
+.or3{width:244px;height:244px;animation:orbitSpin 40s linear infinite;border-color:rgba(255,255,255,.06);}
+@keyframes orbitSpin{to{transform:rotate(360deg);}}
+
+/* Orbit dots */
+.orbit-dot{
+  position:absolute;width:6px;height:6px;border-radius:50%;
+  top:50%;left:50%;
+}
+.od1{
+  background:rgba(160,210,255,.9);
+  box-shadow:0 0 8px rgba(160,210,255,1),0 0 16px rgba(120,180,255,.6);
+  animation:dotOrbit1 18s linear infinite;
+}
+.od2{
+  background:rgba(200,160,255,.8);
+  box-shadow:0 0 6px rgba(200,160,255,.9);
+  animation:dotOrbit2 11s linear infinite reverse;
+  width:4px;height:4px;
+}
+@keyframes dotOrbit1{
+  0%{transform:rotate(0deg) translateX(97px) translate(-50%,-50%);}
+  100%{transform:rotate(360deg) translateX(97px) translate(-50%,-50%);}
+}
+@keyframes dotOrbit2{
+  0%{transform:rotate(0deg) translateX(109px) translate(-50%,-50%);}
+  100%{transform:rotate(360deg) translateX(109px) translate(-50%,-50%);}
+}
+
+/* ── SOUL NAME / META ── */
+.soul-name{
+  font-family:'Ma Shan Zheng',serif;font-size:30px;letter-spacing:5px;
+  background:linear-gradient(135deg,#ffffff 0%,rgba(180,220,255,.95) 50%,rgba(200,180,255,.9) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  margin-bottom:6px;text-align:center;
+  text-shadow:none;
+  filter:drop-shadow(0 2px 12px rgba(120,180,255,.5));
+}
+.soul-quality-tag{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:4px 14px 4px 10px;border-radius:20px;
+  font-size:10px;font-weight:600;letter-spacing:1.5px;
+  position:relative;overflow:hidden;
+  margin-bottom:7px;
+}
+.soul-quality-tag::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:50%;
+  background:linear-gradient(180deg,rgba(255,255,255,.25),transparent);
+}
+.qt-dot{width:5px;height:5px;border-radius:50%;animation:qtPulse 2s ease infinite;}
+@keyframes qtPulse{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(.7);opacity:.5;}}
+
+.soul-rank{font-size:10px;color:var(--txt2);margin-bottom:10px;}
+
+/* ── SOUL ATTRS ── */
+.soul-attrs{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;margin-bottom:14px;padding:0 20px;}
+.soul-attr{
+  font-size:9px;padding:3px 10px;border-radius:12px;
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.13);
+  color:rgba(255,255,255,.5);
+  position:relative;overflow:hidden;
+}
+.soul-attr::before{content:'';position:absolute;top:0;left:0;right:0;height:50%;background:linear-gradient(180deg,rgba(255,255,255,.1),transparent);border-radius:12px 12px 0 0;}
+
+/* ── QUICK ACTIONS ── */
+.quick-acts{display:flex;gap:8px;width:100%;padding:0 14px;margin-bottom:14px;}
+.qa-btn{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:10px 4px 9px;border-radius:16px;cursor:pointer;
+  position:relative;overflow:hidden;transition:all .18s;
+}
+.qa-btn:active{transform:scale(.93);}
+.qa-btn-ico{font-size:20px;position:relative;z-index:1;}
+.qa-btn-lbl{font-size:8px;color:rgba(255,255,255,.65);letter-spacing:.4px;position:relative;z-index:1;}
+.qa-btn.hi .qa-btn-lbl{color:rgba(200,220,255,.9);}
+
+/* ── RESONANCE/EVOLUTION ROW ── */
+.res-evo-row{display:flex;gap:8px;width:100%;padding:0 14px;margin-bottom:6px;}
+.re-btn{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:5px;
+  padding:8px 4px;border-radius:12px;cursor:pointer;
+  font-size:10px;transition:all .2s;position:relative;overflow:hidden;
+}
+.re-btn:active{transform:scale(.95);}
+
+/* ── RING CARD ── */
+.lg-card{
+  position:relative;overflow:hidden;
+  border-radius:20px;margin:0 14px 10px;
+  padding:14px 15px;
+}
+.card-title-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.card-title{
+  font-size:10px;font-weight:700;color:rgba(255,255,255,.45);
+  letter-spacing:1px;text-transform:uppercase;
+  display:flex;align-items:center;gap:5px;
+}
+.card-title::before{content:'';width:2px;height:9px;border-radius:2px;opacity:.8;}
+.card-action{font-size:9px;color:rgba(255,255,255,.3);cursor:pointer;}
+
+/* Ring arc */
+.ring-arc{position:relative;height:52px;margin-bottom:10px;overflow:visible;}
+.r-orb{
+  position:absolute;width:30px;height:30px;border-radius:50%;
+  bottom:0;display:flex;align-items:center;justify-content:center;
+  font-size:9px;font-weight:700;
+  cursor:pointer;transition:transform .2s;
+  overflow:hidden;
+}
+.r-orb::before{
+  content:'';position:absolute;inset:0;border-radius:50%;
+  background:linear-gradient(135deg,rgba(255,255,255,.35) 0%,transparent 50%);
+}
+.r-orb::after{
+  content:'';position:absolute;inset:0;border-radius:50%;
+  border:1px solid rgba(255,255,255,.3);
+}
+.r-orb:hover{transform:scale(1.22) translateY(-4px) !important;}
+.r-orb.empty{
+  background:rgba(255,255,255,.04);
+  border:1px dashed rgba(255,255,255,.1);
+  color:rgba(255,255,255,.18);font-size:12px;
+}
+/* Liquid glass ring orbs */
+.r-orb.liq{
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.4),0 4px 12px rgba(0,0,0,.4),0 0 8px var(--rc);
+  border:1.5px solid rgba(255,255,255,.3);
+  color:rgba(0,0,0,.7);
+  filter:url(#liquid);
+}
+
+/* Gear 2-col */
+.gear-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 14px 10px;}
+.gear-col{position:relative;overflow:hidden;border-radius:18px;padding:11px;}
+
+/* Bone slots */
+.bone-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;}
+.b-slot{
+  aspect-ratio:1;border-radius:10px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-size:14px;cursor:pointer;position:relative;overflow:hidden;transition:all .18s;
+}
+.b-slot::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:50%;
+  background:linear-gradient(180deg,rgba(255,255,255,.15),transparent);
+  border-radius:10px 10px 0 0;
+}
+.b-slot.on{box-shadow:0 0 10px var(--bc,rgba(251,191,36,.5)),inset 0 1px 0 rgba(255,255,255,.3);}
+.b-slot-pw{font-size:6px;color:rgba(255,255,255,.3);margin-top:1px;position:relative;z-index:1;}
+
+/* Skill items */
+.sk-item{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);}
+.sk-item:last-child{border:none;padding-bottom:2px;}
+.sk-ico{
+  width:30px;height:30px;border-radius:9px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:14px;
+  position:relative;overflow:hidden;
+}
+.sk-ico::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.2),transparent 50%);}
+.sk-name{font-size:11px;font-weight:600;color:rgba(196,181,253,.9);}
+.sk-desc{font-size:9px;color:rgba(255,255,255,.3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sk-ring-tag{flex-shrink:0;font-size:8px;padding:2px 6px;border-radius:4px;background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.2);color:rgba(167,139,250,.7);}
+
+/* ── BOTTOM NAV ── */
+#bnav{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:430px;height:72px;z-index:50;
+  display:flex;align-items:center;
+  padding:0 8px 10px;
+  background:linear-gradient(180deg,rgba(8,12,24,0) 0%,rgba(8,12,24,.7) 30%,rgba(8,12,24,.9) 100%);
+}
+.bnav-inner{
+  position:relative;overflow:hidden;
+  display:flex;width:100%;border-radius:24px;
+  background:linear-gradient(135deg,rgba(255,255,255,.12),rgba(255,255,255,.05),rgba(255,255,255,.09));
+  border:1px solid rgba(255,255,255,.2);
+  backdrop-filter:blur(32px) saturate(200%);
+  -webkit-backdrop-filter:blur(32px) saturate(200%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.3),
+    inset 0 -1px 0 rgba(0,0,0,.2),
+    0 8px 32px rgba(0,0,0,.5),
+    0 2px 8px rgba(0,0,0,.3);
+}
+.bnav-inner::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(115deg,rgba(255,255,255,.18) 0%,transparent 35%,transparent 65%,rgba(255,255,255,.08) 100%);
+  border-radius:24px;pointer-events:none;
+}
+.nav-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:2px;padding:10px 4px 9px;
+  cursor:pointer;position:relative;transition:all .2s;
+}
+.nav-item:active{transform:scale(.9);}
+.nav-ico{font-size:19px;transition:transform .2s,filter .2s;position:relative;z-index:1;}
+.nav-lbl{font-size:9px;color:rgba(255,255,255,.4);letter-spacing:.3px;position:relative;z-index:1;transition:color .2s;}
+.nav-item.active .nav-lbl{color:rgba(255,255,255,.95);}
+.nav-item.active .nav-ico{transform:scale(1.12);}
+/* Active indicator — liquid pill */
+.nav-item.active::before{
+  content:'';position:absolute;
+  inset:6px 10% 6px;border-radius:14px;
+  background:linear-gradient(135deg,rgba(255,255,255,.18),rgba(255,255,255,.06));
+  border:1px solid rgba(255,255,255,.22);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 2px 8px rgba(0,0,0,.2);
+}
+/* Nav separator lines */
+.nav-sep{width:1px;align-self:stretch;margin:12px 0;background:linear-gradient(180deg,transparent,rgba(255,255,255,.12),transparent);}
+
+/* ── SOUL ICON SVG REDESIGNS ── */
+/* Each soul icon is a mini SVG drawn inline */
+.svg-soul-icon{
+  display:block;width:100%;height:100%;
+}
+
+/* ── NOTIFY ── */
+#notif{position:fixed;top:65px;right:10px;z-index:300;width:220px;display:flex;flex-direction:column;gap:5px;pointer-events:none;align-items:flex-end;}
+.ntf{
+  display:flex;align-items:center;gap:7px;padding:7px 11px 7px 9px;
+  border-radius:20px;font-size:10px;font-weight:500;
+  position:relative;overflow:hidden;
+  background:linear-gradient(135deg,rgba(255,255,255,.14),rgba(255,255,255,.05));
+  border:1px solid rgba(255,255,255,.2);
+  backdrop-filter:blur(20px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 4px 16px rgba(0,0,0,.4);
+  animation:ntfIn .3s cubic-bezier(.34,1.56,.64,1) both,ntfOut .35s ease 2.9s forwards;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.ntf::before{content:'';position:absolute;top:0;left:0;right:0;height:50%;background:linear-gradient(180deg,rgba(255,255,255,.12),transparent);border-radius:20px 20px 0 0;}
+.ntf-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+@keyframes ntfIn{from{opacity:0;transform:translateX(14px) scale(.9);}to{opacity:1;transform:none;}}
+@keyframes ntfOut{to{opacity:0;transform:translateX(8px);}}
+
+/* ── PAGE NAV INDICATOR ── */
+.page-label{
+  position:fixed;top:60px;left:50%;transform:translateX(-50%);
+  font-size:9px;color:rgba(255,255,255,.28);letter-spacing:3px;
+  text-transform:uppercase;pointer-events:none;
+  animation:fadeIn .5s ease;z-index:20;
+}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+
+/* ── MISC ── */
+.sol-exp-bar{width:100%;height:3px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden;margin-top:3px;}
+.sol-exp-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,rgba(120,180,255,.6),rgba(180,120,255,.6));transition:width .6s ease;}
+
+/* ── GLASS CARD COLORS PER POOL ── */
+.gc-blue{background:linear-gradient(135deg,rgba(60,120,255,.12),rgba(40,80,200,.06),rgba(80,40,200,.09));border-color:rgba(120,180,255,.22);}
+.gc-purple{background:linear-gradient(135deg,rgba(140,60,255,.12),rgba(100,40,200,.06),rgba(60,20,160,.08));border-color:rgba(180,120,255,.2);}
+.gc-gold{background:linear-gradient(135deg,rgba(200,150,40,.12),rgba(160,120,20,.06),rgba(120,80,10,.08));border-color:rgba(220,180,80,.22);}
+.gc-neutral{background:linear-gradient(135deg,rgba(255,255,255,.07),rgba(255,255,255,.03),rgba(255,255,255,.06));border-color:rgba(255,255,255,.1);}
+
+/* ── BOTTOM ROW (grimoire/reawaken) ── */
+.bottom-row{display:flex;gap:8px;margin:0 14px 8px;}
+.br-btn{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:5px;
+  padding:10px;border-radius:14px;cursor:pointer;transition:all .2s;
+  font-size:10px;font-weight:600;letter-spacing:.5px;position:relative;overflow:hidden;
+}
+.br-btn:active{transform:scale(.95);}
+.br-btn::before{content:'';position:absolute;top:0;left:0;right:0;height:50%;background:linear-gradient(180deg,rgba(255,255,255,.15),transparent);border-radius:14px 14px 0 0;}
+
+/* Pool switcher demo */
+#pool-demo{display:flex;gap:6px;padding:8px 14px 0;flex-wrap:wrap;}
+.pool-tag{
+  padding:4px 12px;border-radius:12px;font-size:9px;cursor:pointer;
+  position:relative;overflow:hidden;transition:all .2s;
+}
+.pool-tag::before{content:'';position:absolute;top:0;left:0;right:0;height:50%;background:linear-gradient(180deg,rgba(255,255,255,.18),transparent);}
+
+/* ── FLOATING BAG BTN ── */
+#bag-fab{
+  position:fixed;bottom:82px;right:14px;
+  width:46px;height:46px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:21px;cursor:pointer;z-index:100;
+  transition:transform .2s;
+}
+#bag-fab:active{transform:scale(.9);}
+</style>
+</head>
+<body>
+
+<div id="bg-layer">
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  <div class="blob blob3"></div>
+</div>
+
+<div id="notif"></div>
+
+<div id="app">
+
+  <!-- TOP BAR -->
+  <div id="topbar">
+    <div class="tb-title">斗罗觉醒</div>
+    <div class="tb-pills">
+      <div class="lg-pill pow">⚔️ <span id="hud-pow">284,600</span></div>
+      <div class="lg-pill">⚡ Lv.45</div>
+      <div class="lg-pill">💫 12,500</div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div id="content">
+
+    <!-- POOL SWITCHER DEMO -->
+    <div id="pool-demo">
+      <div class="pool-tag glass gc-blue" onclick="switchSoul(0,this)">🌿 蓝银草</div>
+      <div class="pool-tag glass gc-purple" onclick="switchSoul(1,this)">⚡ 蓝电霸王龙</div>
+      <div class="pool-tag glass gc-gold" onclick="switchSoul(2,this)">😇 神圣天使</div>
+      <div class="pool-tag glass" style="background:linear-gradient(135deg,rgba(240,171,252,.12),rgba(200,100,252,.06));border-color:rgba(240,171,252,.25);" onclick="switchSoul(3,this)">🌿⚡ 双生</div>
+    </div>
+
+    <!-- HERO -->
+    <div class="v10-hero">
+
+      <!-- Soul sphere -->
+      <div class="soul-sphere-wrap">
+        <div class="sphere-ambient"></div>
+        <div class="orbit-ring or3"></div>
+        <div class="orbit-ring or2"></div>
+        <div class="orbit-ring or1"></div>
+        <div class="orbit-dot od2"></div>
+        <div class="orbit-dot od1"></div>
+        <!-- Glass sphere -->
+        <div class="soul-sphere" id="soul-sphere">
+          <div class="sphere-shine"></div>
+          <div class="sphere-rim"></div>
+        </div>
+        <div class="sphere-chroma"></div>
+        <!-- Soul icon floats above sphere -->
+        <div class="sphere-icon" id="sphere-icon">🌿</div>
+      </div>
+
+      <!-- Name -->
+      <div class="soul-name" id="soul-name">蓝银草</div>
+
+      <!-- Quality tag -->
+      <div class="soul-quality-tag glass" id="quality-tag"
+        style="background:linear-gradient(135deg,rgba(34,197,94,.2),rgba(16,185,129,.08));border-color:rgba(34,197,94,.3);color:#6ee7b7;">
+        <div class="qt-dot" style="background:#6ee7b7;box-shadow:0 0 5px #6ee7b7;"></div>
+        普通品质
+      </div>
+
+      <div class="soul-rank" id="soul-rank">魂宗 · 45级</div>
+
+      <!-- Attrs -->
+      <div class="soul-attrs" id="soul-attrs">
+        <div class="soul-attr">草</div>
+        <div class="soul-attr">控制</div>
+        <div class="soul-attr">皇者</div>
+      </div>
+
+      <!-- Quick actions -->
+      <div class="quick-acts">
+        <div class="qa-btn glass hi" style="border-color:rgba(120,180,255,.28);" onclick="notify('装配魂环','blue')">
+          <div class="qa-btn-ico">💍</div><div class="qa-btn-lbl" style="color:rgba(160,210,255,.9)">装配魂环</div>
+        </div>
+        <div class="qa-btn glass" onclick="notify('二次觉醒','purple')">
+          <div class="qa-btn-ico">⚡</div><div class="qa-btn-lbl">二次觉醒</div>
+        </div>
+        <div class="qa-btn glass" onclick="notify('魂骨管理','gold')">
+          <div class="qa-btn-ico">🦴</div><div class="qa-btn-lbl">魂骨管理</div>
+        </div>
+        <div class="qa-btn glass" onclick="notify('魂技详情','normal')">
+          <div class="qa-btn-ico">📖</div><div class="qa-btn-lbl">魂技详情</div>
+        </div>
+      </div>
+
+      <!-- Resonance / Evolution -->
+      <div class="res-evo-row">
+        <div class="re-btn glass" style="border-color:rgba(245,158,11,.2);background:linear-gradient(135deg,rgba(245,158,11,.1),rgba(245,158,11,.04));" onclick="notify('武魂共鸣 +12,400','gold')">
+          ✨ 武魂共鸣 <span style="font-size:9px;color:rgba(255,255,255,.4)">+12,400</span>
+        </div>
+        <div class="re-btn glass" style="border-color:rgba(139,92,246,.25);background:linear-gradient(135deg,rgba(139,92,246,.1),rgba(139,92,246,.04));color:#c4b5fd;" onclick="notify('传承进化','purple')">
+          🌟 传承进化
+        </div>
+      </div>
+
+    </div><!-- /hero -->
+
+    <!-- RING CARD -->
+    <div class="lg-card glass gc-blue">
+      <div class="card-title-row">
+        <div class="card-title" style="--bc:#4fa3ff;"><div style="width:2px;height:9px;background:#4fa3ff;border-radius:2px;opacity:.8;"></div>魂环 5/10</div>
+        <div class="card-action">装配 +</div>
+      </div>
+      <!-- Ring arc -->
+      <div class="ring-arc" id="ring-arc">
+        <!-- orbs injected by JS -->
+      </div>
+      <!-- Ring list -->
+      <div id="ring-list"></div>
+    </div>
+
+    <!-- GEAR 2-COL -->
+    <div class="gear-grid">
+      <!-- Bone col -->
+      <div class="lg-card glass gc-neutral" style="margin:0;border-radius:18px;">
+        <div class="card-title-row">
+          <div class="card-title"><div style="width:2px;height:9px;background:rgba(255,255,255,.4);border-radius:2px;"></div>魂骨</div>
+          <div class="card-action">管理 ›</div>
+        </div>
+        <div class="bone-grid" id="bone-grid"></div>
+        <div style="font-size:8px;color:rgba(255,255,255,.25);text-align:center;margin-top:6px;">4/6装备 · 特殊0/6</div>
+      </div>
+      <!-- Artifact col -->
+      <div class="lg-card glass gc-gold" style="margin:0;border-radius:18px;">
+        <div class="card-title-row">
+          <div class="card-title"><div style="width:2px;height:9px;background:rgba(245,158,11,.7);border-radius:2px;"></div>神器</div>
+          <div class="card-action" onclick="notify('卸下神器','normal')">卸下 ›</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;text-align:center;">
+          <div style="width:52px;height:52px;border-radius:13px;margin-bottom:6px;display:flex;align-items:center;justify-content:center;font-size:28px;position:relative;overflow:hidden;"
+            class="glass" style="border-color:rgba(245,158,11,.35);">
+            <span style="position:relative;z-index:1;filter:url(#icon-glow);">🌌</span>
+          </div>
+          <div style="font-size:10px;font-weight:700;color:rgba(245,158,11,.9);">宇宙碎片</div>
+          <div style="font-size:8px;color:rgba(255,255,255,.3);margin-top:1px;">战力+40,000</div>
+          <div style="font-size:8px;color:rgba(255,255,255,.25);margin-top:3px;line-height:1.5">全属性+25%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SKILL CARD -->
+    <div class="lg-card glass gc-purple">
+      <div class="card-title-row">
+        <div class="card-title"><div style="width:2px;height:9px;background:#a78bfa;border-radius:2px;opacity:.8;"></div>魂技</div>
+        <div class="card-action">全部 8 个 ›</div>
+      </div>
+      <div id="skill-list"></div>
+    </div>
+
+    <!-- BOTTOM ROW -->
+    <div class="bottom-row">
+      <div class="br-btn glass" style="border-color:rgba(139,92,246,.25);color:#c4b5fd;" onclick="notify('武魂图鉴','purple')">
+        <span>📖</span>武魂图鉴
+      </div>
+      <div class="br-btn glass" style="border-color:rgba(239,68,68,.15);color:rgba(248,113,113,.5);" onclick="notify('再次觉醒','red')">
+        🔄 再次觉醒
+      </div>
+    </div>
+
+    <div style="height:8px;"></div>
+  </div><!-- /content -->
+
+</div><!-- /app -->
+
+<!-- BOTTOM NAV -->
+<div id="bnav">
+  <div class="bnav-inner">
+    <div class="nav-item active" onclick="navClick(this)">
+      <div class="nav-ico">⚡</div>
+      <div class="nav-lbl">武魂</div>
+    </div>
+    <div class="nav-sep"></div>
+    <div class="nav-item" onclick="navClick(this)">
+      <div class="nav-ico">🔮</div>
+      <div class="nav-lbl">试炼</div>
+    </div>
+    <div class="nav-sep"></div>
+    <div class="nav-item" onclick="navClick(this)">
+      <div class="nav-ico">🌟</div>
+      <div class="nav-lbl">星运</div>
+    </div>
+    <div class="nav-sep"></div>
+    <div class="nav-item" onclick="navClick(this)">
+      <div class="nav-ico">📋</div>
+      <div class="nav-lbl">任务</div>
+    </div>
+    <div class="nav-sep"></div>
+    <div class="nav-item" onclick="navClick(this)">
+      <div class="nav-ico">⚔️</div>
+      <div class="nav-lbl">世界</div>
+    </div>
+  </div>
+</div>
+
+<!-- FLOATING BAG -->
+<div id="bag-fab" class="glass" style="border-color:rgba(255,255,255,.22);" onclick="notify('背包','normal')">🎒</div>
+
+<script>
+// ── SOUL CONFIGS ──
+const SOULS=[
+  {
+    name:'蓝银草',icon:'🌿',quality:'普通',qualityCol:'#6ee7b7',qBg:'rgba(34,197,94,.2)',qBorder:'rgba(34,197,94,.3)',
+    attrs:['草','控制','皇者'],sphereGrad:'radial-gradient(ellipse at 38% 28%,rgba(100,220,160,.45) 0%,rgba(50,160,100,.2) 30%,rgba(20,80,50,.15) 60%,rgba(5,30,15,.35) 100%)',
+    sphereShadow:'rgba(50,180,100,.18)',orbCol:'rgba(100,220,160,.9)',ambientCol:'rgba(50,200,120,.22)',
+    rank:'魂宗 · 45级',
+  },
+  {
+    name:'蓝电霸王龙',icon:'⚡',quality:'史诗',qualityCol:'#a78bfa',qBg:'rgba(139,92,246,.2)',qBorder:'rgba(139,92,246,.35)',
+    attrs:['雷','龙','霸王'],sphereGrad:'radial-gradient(ellipse at 38% 28%,rgba(180,140,255,.5) 0%,rgba(120,80,220,.25) 30%,rgba(60,30,160,.15) 60%,rgba(10,5,60,.35) 100%)',
+    sphereShadow:'rgba(140,90,255,.22)',orbCol:'rgba(180,140,255,.95)',ambientCol:'rgba(130,80,255,.25)',
+    rank:'魂王 · 68级',
+  },
+  {
+    name:'神圣天使',icon:'😇',quality:'顶级',qualityCol:'#fde68a',qBg:'rgba(245,215,60,.2)',qBorder:'rgba(245,215,60,.35)',
+    attrs:['极致之光','神圣','天使','神力'],sphereGrad:'radial-gradient(ellipse at 38% 28%,rgba(255,240,160,.55) 0%,rgba(220,180,80,.25) 30%,rgba(160,120,20,.15) 60%,rgba(60,40,5,.35) 100%)',
+    sphereShadow:'rgba(240,200,60,.22)',orbCol:'rgba(255,230,100,.95)',ambientCol:'rgba(220,180,40,.25)',
+    rank:'封号斗罗 · 96级',
+  },
+  {
+    name:'蓝银草+昊天锤',icon:'🌿⚡',quality:'双生武魂',qualityCol:'#f0abfc',qBg:'rgba(240,171,252,.18)',qBorder:'rgba(240,171,252,.32)',
+    attrs:['草','力量','控制','双生'],sphereGrad:'radial-gradient(ellipse at 38% 28%,rgba(240,180,255,.5) 0%,rgba(180,100,240,.22) 30%,rgba(100,40,180,.15) 60%,rgba(30,5,60,.35) 100%)',
+    sphereShadow:'rgba(220,140,255,.25)',orbCol:'rgba(240,180,255,.95)',ambientCol:'rgba(200,120,255,.25)',
+    rank:'超神级 · 128级',
+  },
+];
+let curSoul=0;
+
+// ── RING DATA ──
+const RINGS=[
+  {n:'百年',c:'#a78bfa',grad:'ring-100',pw:80},{n:'千年',c:'#60a5fa',grad:'ring-100',pw:200},
+  {n:'万年',c:'#34d399',grad:'ring-10k',pw:500},{n:'十万年',c:'#fbbf24',grad:'ring-100k',pw:1200},
+  {n:'百万年',c:'#f87171',grad:'ring-1m',pw:3500},{n:'空',c:null},{n:'空',c:null},
+  {n:'空',c:null},{n:'空',c:null},{n:'空',c:null},
+];
+const ARC_POS=[
+  {l:0,b:0},{l:32,b:16},{l:64,b:30},{l:97,b:40},{l:130,b:44},
+  {l:163,b:40},{l:195,b:30},{l:226,b:16},{l:256,b:4},{l:285,b:0}
+];
+
+// ── BONE DATA ──
+const BONE_SLOTS=[
+  {i:'💀',n:'头部',on:true,pw:12500},{i:'🦴',n:'躯干',on:true,pw:26000},
+  {i:'💪',n:'左臂',on:true,pw:27200},{i:'💪',n:'右臂',on:false,pw:0},
+  {i:'🦵',n:'左腿',on:true,pw:13100},{i:'🦵',n:'右腿',on:false,pw:0},
+];
+
+// ── SKILLS ──
+const SKILLS=[
+  {ico:'⚡',name:'属性共鸣·质变',desc:'与武魂属性共鸣，属性伤害大幅提升',ring:'第1环',mut:true},
+  {ico:'🐉',name:'领域半开',desc:'领域展开，强力压制区域内目标',ring:'第3环'},
+  {ico:'🌀',name:'混沌裂空斩·质变',desc:'不可估量魂环质变，效果+500%！',ring:'第5环',mut:true},
+];
+
+// ── RENDER RINGS ──
+function renderRings(){
+  const arc=document.getElementById('ring-arc');
+  arc.innerHTML='';
+  RINGS.forEach((r,i)=>{
+    const pos=ARC_POS[i];
+    const div=document.createElement('div');
+    div.className='r-orb'+(r.c?' liq':'  empty');
+    if(r.c){
+      div.style.cssText=`left:${pos.l}px;bottom:${pos.b}px;--rc:${r.c};background:radial-gradient(ellipse at 35% 28%,${r.c}cc,${r.c}44 50%,${r.c}11 100%);`;
+      div.style.color='rgba(0,0,0,.75)';
+      div.textContent=r.n[0];
+    } else {
+      div.style.cssText=`left:${pos.l}px;bottom:${pos.b}px;`;
+      div.textContent='+';
+    }
+    arc.appendChild(div);
+  });
+
+  // Ring list
+  const rl=document.getElementById('ring-list');
+  rl.innerHTML=RINGS.filter(r=>r.c).slice(0,3).map((r,i)=>`
+    <div style="display:flex;align-items:center;gap:6px;padding:4px 6px;border-radius:7px;background:rgba(255,255,255,.03);margin-bottom:3px;">
+      <div style="width:7px;height:7px;border-radius:50%;background:${r.c};box-shadow:0 0 5px ${r.c};flex-shrink:0;"></div>
+      <div style="font-size:10px;color:rgba(255,255,255,.8);flex:1;">${r.n}</div>
+      <div style="font-size:9px;color:rgba(245,158,11,.7);font-weight:600;">+${r.pw}</div>
+    </div>`).join('');
+  const more=RINGS.filter(r=>r.c).length-3;
+  if(more>0)rl.innerHTML+=`<div style="text-align:center;font-size:9px;color:rgba(255,255,255,.25);padding:4px 0;">还有 ${more} 个魂环 · 展开</div>`;
+}
+
+// ── RENDER BONES ──
+function renderBones(){
+  document.getElementById('bone-grid').innerHTML=BONE_SLOTS.map(b=>`
+    <div class="b-slot glass" style="${b.on?`border-color:rgba(251,191,36,.3);background:linear-gradient(135deg,rgba(251,191,36,.12),rgba(251,191,36,.04));--bc:rgba(251,191,36,.4);`:'border-color:rgba(255,255,255,.08);background:rgba(255,255,255,.03);'}" onclick="notify('${b.n}','gold')">
+      <span style="position:relative;z-index:1;">${b.i}</span>
+      <div class="b-slot-pw">${b.on?'+'+b.pw.toLocaleString():'空'}</div>
+    </div>`).join('');
+}
+
+// ── RENDER SKILLS ──
+function renderSkills(){
+  document.getElementById('skill-list').innerHTML=SKILLS.map(sk=>`
+    <div class="sk-item">
+      <div class="sk-ico glass" style="border-color:rgba(124,58,237,.2);background:linear-gradient(135deg,rgba(124,58,237,.15),rgba(124,58,237,.05));">
+        <span style="position:relative;z-index:1;">${sk.ico}</span>
+      </div>
+      <div style="flex:1;min-width:0;">
+        <div class="sk-name">${sk.name}</div>
+        <div class="sk-desc">${sk.desc}</div>
+      </div>
+      <div class="sk-ring-tag" ${sk.mut?'style="color:#e879f9;background:rgba(232,121,249,.08);border-color:rgba(232,121,249,.2);"':''}>${sk.ring}</div>
+    </div>`).join('');
+}
+
+// ── SWITCH SOUL ──
+function switchSoul(idx,el){
+  curSoul=idx;
+  const s=SOULS[idx];
+  document.querySelectorAll('.pool-tag').forEach(t=>t.style.outline='none');
+  el.style.outline='2px solid rgba(255,255,255,.4)';
+  // Update sphere
+  document.getElementById('soul-sphere').style.background=s.sphereGrad;
+  document.getElementById('soul-sphere').style.boxShadow=`inset 0 2px 0 rgba(255,255,255,.5),inset 0 -2px 4px rgba(0,0,0,.3),0 20px 60px rgba(0,0,0,.6),0 0 40px ${s.sphereShadow}`;
+  document.querySelector('.sphere-ambient').style.background=`conic-gradient(from 0deg,transparent 0%,${s.ambientCol} 20%,transparent 40%,${s.ambientCol.replace('.22','.14')} 60%,transparent 80%,${s.ambientCol.replace('.22','.1')} 100%)`;
+  document.getElementById('sphere-icon').textContent=s.icon;
+  document.getElementById('sphere-icon').style.filter=`drop-shadow(0 8px 20px rgba(0,0,0,.5)) drop-shadow(0 0 30px ${s.sphereShadow})`;
+  document.getElementById('soul-name').textContent=s.name;
+  document.getElementById('soul-rank').textContent=s.rank;
+  const qt=document.getElementById('quality-tag');
+  qt.style.background=s.qBg;qt.style.borderColor=s.qBorder;qt.style.color=s.qualityCol;
+  qt.querySelector('.qt-dot').style.background=s.qualityCol;qt.querySelector('.qt-dot').style.boxShadow='0 0 5px '+s.qualityCol;
+  qt.childNodes[qt.childNodes.length-1].textContent=s.quality;
+  document.getElementById('soul-attrs').innerHTML=s.attrs.map(a=>`<div class="soul-attr">${a}</div>`).join('');
+  document.querySelector('.od1').style.background=s.orbCol;
+  document.querySelector('.od1').style.boxShadow=`0 0 8px ${s.orbCol},0 0 16px ${s.orbCol.replace('.9','.5')}`;
+}
+
+// ── NAV CLICK ──
+function navClick(el){
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  el.classList.add('active');
+  const lbl=el.querySelector('.nav-lbl').textContent;
+  notify(lbl,'normal');
+}
+
+// ── NOTIFY ──
+function notify(msg,type='normal'){
+  const a=document.getElementById('notif');
+  while(a.children.length>=4)a.firstChild.remove();
+  const colors={normal:'rgba(160,200,255,.9)',blue:'rgba(120,180,255,.9)',purple:'rgba(180,140,255,.9)',gold:'rgba(245,215,100,.9)',red:'rgba(255,120,120,.9)'};
+  const el=document.createElement('div');
+  el.className='ntf';
+  el.innerHTML=`<div class="ntf-dot" style="background:${colors[type]||colors.normal};box-shadow:0 0 5px ${colors[type]||colors.normal};"></div>${msg}`;
+  a.appendChild(el);
+  setTimeout(()=>{el.style.animation='ntfOut .35s ease forwards';setTimeout(()=>el.remove(),350);},3000);
+}
+
+// ── CANVAS AMBIENT PARTICLES ──
+const canvas=document.createElement('canvas');
+canvas.style.cssText='position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;';
+document.body.insertBefore(canvas,document.getElementById('app'));
+const ctx=canvas.getContext('2d');
+function resizeCanvas(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}
+resizeCanvas();window.addEventListener('resize',resizeCanvas);
+
+let t=0;
+const pts=Array.from({length:40},(_,i)=>({
+  x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,
+  vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.25,
+  r:Math.random()*1.5+.3,
+  phase:Math.random()*Math.PI*2,
+  col:[`rgba(120,180,255,`, `rgba(180,120,255,`, `rgba(80,220,180,`][i%3],
+}));
+function animPts(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  t+=.008;
+  pts.forEach(p=>{
+    p.x+=p.vx;p.y+=p.vy;
+    if(p.x<0)p.x=canvas.width;if(p.x>canvas.width)p.x=0;
+    if(p.y<0)p.y=canvas.height;if(p.y>canvas.height)p.y=0;
+    const a=(Math.sin(t+p.phase)*.5+.5)*.4;
+    ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fillStyle=p.col+a+')';ctx.fill();
+  });
+  requestAnimationFrame(animPts);
+}
+animPts();
+
+// ── INIT ──
+renderRings();renderBones();renderSkills();
+switchSoul(0,document.querySelector('.pool-tag'));
+</script>
+</body>
+</html>
